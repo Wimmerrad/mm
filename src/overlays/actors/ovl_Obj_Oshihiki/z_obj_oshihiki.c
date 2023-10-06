@@ -134,26 +134,26 @@ void ObjOshihiki_UpdateInitPos(ObjOshihiki* this) {
 }
 
 s32 ObjOshihiki_NoSwitchPress(ObjOshihiki* this, DynaPolyActor* dyna, PlayState* play) {
-    s16 switchFlag;
+    s16 dynaSwitchFlag;
 
     if (dyna == NULL) {
         return true;
     }
 
     if (dyna->actor.id == ACTOR_OBJ_SWITCH) {
-        switchFlag = OBJSWITCH_GET_7F00(&dyna->actor);
+        dynaSwitchFlag = OBJSWITCH_GET_7F00(&dyna->actor);
 
         switch (OBJSWITCH_GET_33(&dyna->actor)) {
             case OBJSWITCH_NORMAL_BLUE:
-                if ((switchFlag == OBJOSHIHIKI_GET_SWITCH_FLAG(&this->dyna.actor)) &&
-                    Flags_GetSwitch(play, switchFlag)) {
+                if ((dynaSwitchFlag == OBJOSHIHIKI_GET_7F00(&this->dyna.actor)) &&
+                    Flags_GetSwitch(play, dynaSwitchFlag)) {
                     return false;
                 }
                 break;
 
             case OBJSWITCH_INVERSE_BLUE:
-                if ((switchFlag == OBJOSHIHIKI_GET_SWITCH_FLAG(&this->dyna.actor)) &&
-                    !Flags_GetSwitch(play, switchFlag)) {
+                if ((dynaSwitchFlag == OBJOSHIHIKI_GET_7F00(&this->dyna.actor)) &&
+                    !Flags_GetSwitch(play, dynaSwitchFlag)) {
                     return false;
                 }
                 break;
@@ -200,16 +200,13 @@ void ObjOshihiki_Init(Actor* thisx, PlayState* play) {
 
     if ((OBJOSHIHIKI_GET_FF00(&this->dyna.actor) >= OBJOSHIHIKI_FF00_0) &&
         (OBJOSHIHIKI_GET_FF00(&this->dyna.actor) < OBJOSHIHIKI_FF00_80)) {
-        if (Flags_GetSwitch(play, OBJOSHIHIKI_GET_SWITCH_FLAG(&this->dyna.actor))) {
+        if (Flags_GetSwitch(play, OBJOSHIHIKI_GET_7F00(&this->dyna.actor))) {
             switch (OBJOSHIHIKI_GET_F(&this->dyna.actor)) {
                 case OBJOSHIHIKI_F_0:
                 case OBJOSHIHIKI_F_1:
                 case OBJOSHIHIKI_F_2:
                     Actor_Kill(&this->dyna.actor);
                     return;
-
-                default:
-                    break;
             }
         } else {
             switch (OBJOSHIHIKI_GET_F(&this->dyna.actor)) {
@@ -218,9 +215,6 @@ void ObjOshihiki_Init(Actor* thisx, PlayState* play) {
                 case OBJOSHIHIKI_F_5:
                     Actor_Kill(&this->dyna.actor);
                     return;
-
-                default:
-                    break;
             }
         }
     }

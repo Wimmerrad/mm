@@ -104,8 +104,7 @@ void EnBigokuta_Init(Actor* thisx, PlayState* play) {
     this->csId = CutsceneManager_GetAdditionalCsId(this->picto.actor.csId);
 
     if (CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE) ||
-        ((EN_BIGOKUTA_GET_SWITCH_FLAG(&this->picto.actor) != 0xFF) &&
-         Flags_GetSwitch(play, EN_BIGOKUTA_GET_SWITCH_FLAG(&this->picto.actor)))) {
+        ((this->picto.actor.params != 0xFF) && Flags_GetSwitch(play, this->picto.actor.params))) {
         Actor_Kill(&this->picto.actor);
     } else {
         this->picto.actor.world.pos.y -= 99.0f;
@@ -446,8 +445,8 @@ void EnBigokuta_PlayDeathEffects(EnBigokuta* this, PlayState* play) {
                                                       &D_80AC45B8, Rand_S16Offset(150, 50), 25, false);
                 }
 
-                if (EN_BIGOKUTA_GET_SWITCH_FLAG(&this->picto.actor) != 0xFF) {
-                    Flags_SetSwitch(play, EN_BIGOKUTA_GET_SWITCH_FLAG(&this->picto.actor));
+                if (this->picto.actor.params != 0xFF) {
+                    Flags_SetSwitch(play, this->picto.actor.params);
                 }
 
                 CutsceneManager_Stop(this->csId);

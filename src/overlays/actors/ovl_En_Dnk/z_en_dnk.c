@@ -209,10 +209,10 @@ s32 func_80A515C4(EnDnk* this) {
 }
 
 void func_80A51648(EnDnk* this, PlayState* play) {
-    if (SubS_IsObjectLoaded(this->objectSlot, play) == true) {
-        gSegments[0x06] = VIRTUAL_TO_PHYSICAL(play->objectCtx.slots[this->objectSlot].segment);
+    if (SubS_IsObjectLoaded(this->unk_28E, play) == true) {
+        gSegments[0x06] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[this->unk_28E].segment);
         this->actor.draw = func_80A52018;
-        this->actor.objectSlot = this->objectSlot;
+        this->actor.objBankIndex = this->unk_28E;
         ActorShape_Init(&this->actor.shape, 0.0f, NULL, 18.0f);
 
         switch (ENDNK_GET_3(&this->actor)) {
@@ -263,23 +263,22 @@ void EnDnk_DoNothing(EnDnk* this, PlayState* play) {
 void EnDnk_Init(Actor* thisx, PlayState* play) {
     EnDnk* this = THIS;
 
-    this->objectSlot = OBJECT_SLOT_NONE;
-
+    this->unk_28E = -1;
     switch (ENDNK_GET_3(&this->actor)) {
         case ENDNK_GET_3_1:
-            this->objectSlot = SubS_GetObjectSlot(OBJECT_HINTNUTS, play);
+            this->unk_28E = SubS_GetObjectIndex(OBJECT_HINTNUTS, play);
             break;
 
         case ENDNK_GET_3_0:
-            this->objectSlot = SubS_GetObjectSlot(OBJECT_DNK, play);
+            this->unk_28E = SubS_GetObjectIndex(OBJECT_DNK, play);
             break;
 
         case ENDNK_GET_3_2:
-            this->objectSlot = SubS_GetObjectSlot(OBJECT_DEKUNUTS, play);
+            this->unk_28E = SubS_GetObjectIndex(OBJECT_DEKUNUTS, play);
             break;
     }
 
-    if (this->objectSlot > OBJECT_SLOT_NONE) {
+    if (this->unk_28E >= 0) {
         this->actionFunc = func_80A51648;
     } else {
         Actor_Kill(&this->actor);

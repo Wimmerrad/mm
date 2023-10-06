@@ -60,8 +60,7 @@ void EnWarptag_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = EnWarpTag_WaitForPlayer;
 
         } else {
-            if ((this->dangeonKeepObjectSlot = Object_GetSlot(&play->objectCtx, GAMEPLAY_DANGEON_KEEP)) <=
-                OBJECT_SLOT_NONE) {
+            if ((this->dangeonKeepObject = Object_GetIndex(&play->objectCtx, GAMEPLAY_DANGEON_KEEP)) < 0) {
                 Actor_Kill(&this->dyna.actor);
             }
 
@@ -84,11 +83,11 @@ void EnWarptag_Destroy(Actor* thisx, PlayState* play) {
  * Loads DynaPoly from GAMEPLAY_DANGEON_KEEP.
  */
 void EnWarpTag_CheckDungeonKeepObject(EnWarptag* this, PlayState* play) {
-    if (Object_IsLoaded(&play->objectCtx, this->dangeonKeepObjectSlot)) {
+    if (Object_IsLoaded(&play->objectCtx, this->dangeonKeepObject)) {
         this->actionFunc = EnWarpTag_WaitForPlayer;
         DynaPolyActor_Init(&this->dyna, 0x1);
         DynaPolyActor_LoadMesh(play, &this->dyna, &gWarpTagGoronTrialBaseCol);
-        this->dyna.actor.objectSlot = this->dangeonKeepObjectSlot;
+        this->dyna.actor.objBankIndex = this->dangeonKeepObject;
         this->dyna.actor.draw = EnWarpTag_Draw;
     }
 }

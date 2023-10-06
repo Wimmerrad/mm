@@ -47,6 +47,12 @@ ActorInit En_Weather_Tag_InitVars = {
     (ActorFunc)EnWeatherTag_Draw,
 };
 
+extern f32 D_801F4E74;
+extern u8 D_801BDBB8;
+extern u8 D_801BDBB4;
+extern u8 D_801F4E30;
+extern s16 D_801F4E7A;
+
 void EnWeatherTag_SetupAction(EnWeatherTag* this, EnWeatherTagActionFunc func) {
     this->actionFunc = func;
 }
@@ -125,17 +131,17 @@ u8 func_80966608(EnWeatherTag* this, PlayState* play, UNK_TYPE a3, UNK_TYPE a4, 
 
     if (WEATHER_TAG_RANGE100(&this->actor) > Actor_WorldDistXZToActor(&player->actor, &this->actor)) {
         if (play->envCtx.lightConfig == play->envCtx.changeLightNextConfig) {
-            gInterruptSongOfStorms = true;
-            if (!(play->envCtx.lightMode == LIGHT_MODE_TIME) ||
+            D_801BDBB8 = 1;
+            if (!(play->envCtx.lightMode == 0) ||
                 ((play->envCtx.lightConfig != 1) && !play->envCtx.changeLightEnabled)) {
 
-                gInterruptSongOfStorms = false;
+                D_801BDBB8 = 0;
                 if (gWeatherMode != weatherMode) {
                     gWeatherMode = weatherMode;
                     play->envCtx.changeLightEnabled = true;
                     play->envCtx.lightConfig = lightConfig;
                     play->envCtx.changeLightNextConfig = changeLightNextConfig;
-                    gLightConfigAfterUnderwater = changeLightNextConfig;
+                    D_801BDBB4 = changeLightNextConfig;
                     play->envCtx.changeDuration = changeDuration;
                     play->envCtx.changeLightTimer = play->envCtx.changeDuration;
                 }
@@ -155,16 +161,16 @@ u8 func_80966758(EnWeatherTag* this, PlayState* play, UNK_TYPE a3, UNK_TYPE a4, 
 
     if (WEATHER_TAG_RANGE100(&this->actor) < Actor_WorldDistXZToActor(&player->actor, &this->actor)) {
         if (play->envCtx.lightConfig == play->envCtx.changeLightNextConfig) {
-            gInterruptSongOfStorms = true;
-            if (!(play->envCtx.lightMode == LIGHT_MODE_TIME) ||
+            D_801BDBB8 = 1;
+            if (!(play->envCtx.lightMode == 0) ||
                 ((play->envCtx.lightConfig != 1) && !play->envCtx.changeLightEnabled)) {
 
-                gInterruptSongOfStorms = false;
-                gWeatherMode = WEATHER_MODE_CLEAR;
+                D_801BDBB8 = 0;
+                gWeatherMode = 0;
                 play->envCtx.changeLightEnabled = true;
                 play->envCtx.lightConfig = lightConfig;
                 play->envCtx.changeLightNextConfig = changeLightNextConfig;
-                gLightConfigAfterUnderwater = changeLightNextConfig;
+                D_801BDBB4 = changeLightNextConfig;
                 play->envCtx.changeDuration = changeDuration;
                 play->envCtx.changeLightTimer = play->envCtx.changeDuration;
                 returnVal = 1;
@@ -195,11 +201,11 @@ void func_8096689C(EnWeatherTag* this, PlayState* play) {
 
     play->envCtx.windSpeed = (this->actor.world.rot.z * partialResult) + 30.0f;
     if (partialResult > 0.01f) {
-        play->envCtx.sandstormState = SANDSTORM_8;
+        play->envCtx.sandstormState = 8;
         D_801F4E30 = 0x9B;
-    } else if (play->envCtx.sandstormState == SANDSTORM_8) {
+    } else if (play->envCtx.sandstormState == 8) {
         D_801F4E30 = 0;
-        play->envCtx.sandstormState = SANDSTORM_9;
+        play->envCtx.sandstormState = 9;
     }
 }
 
@@ -237,7 +243,7 @@ void EnWeatherTag_Die(EnWeatherTag* this, PlayState* play) {
 //  poisoned swamp: placed behind the water fall from ikana
 // this tag stops spawning after STT cleared?
 void func_80966B08(EnWeatherTag* this, PlayState* play) {
-    if (func_80966608(this, play, 0, 0, play->envCtx.lightConfig, 5, 100, 2) || (gWeatherMode == WEATHER_MODE_2)) {
+    if (func_80966608(this, play, 0, 0, play->envCtx.lightConfig, 5, 100, 2) || (gWeatherMode == 2)) {
         play->skyboxId = SKYBOX_3;
         EnWeatherTag_SetupAction(this, func_80966D20);
     } else if (D_801F4E74 <= 0.01f) {
@@ -309,7 +315,7 @@ void func_80966D20(EnWeatherTag* this, PlayState* play) {
         EnWeatherTag_SetupAction(this, func_80966B08);
     }
 
-    if (gWeatherMode != WEATHER_MODE_2) {
+    if (gWeatherMode != 2) {
         EnWeatherTag_SetupAction(this, func_80966B08);
     }
 }
@@ -319,7 +325,7 @@ void func_80966D20(EnWeatherTag* this, PlayState* play) {
 //   path to goron village winter, winter mountain village
 void func_80966E0C(EnWeatherTag* this, PlayState* play) {
     if (func_80966608(this, play, 0, 1, 0, 2, 60, 3)) {
-        play->envCtx.precipitation[PRECIP_SNOW_MAX] = 128;
+        play->envCtx.unk_F2[3] = 0x80;
         EnWeatherTag_SetupAction(this, func_80966E84);
     }
 }
@@ -327,7 +333,7 @@ void func_80966E0C(EnWeatherTag* this, PlayState* play) {
 // WEATHERTAG_TYPE_WINTERFOG 2
 void func_80966E84(EnWeatherTag* this, PlayState* play) {
     if (func_80966758(this, play, 1, 0, 2, 0, 60)) {
-        play->envCtx.precipitation[PRECIP_SNOW_MAX] = 0;
+        play->envCtx.unk_F2[3] = 0;
         EnWeatherTag_SetupAction(this, func_80966E0C);
     }
 }
@@ -337,8 +343,8 @@ void func_80966E84(EnWeatherTag* this, PlayState* play) {
 // wait if you enter the scene through a room instead of fog you get a flash rain shower
 void func_80966EF0(EnWeatherTag* this, PlayState* play) {
     if (func_80966608(this, play, 0, 1, 0, 2, 100, 4)) {
-        Environment_PlayStormNatureAmbience(play);
-        play->envCtx.precipitation[PRECIP_RAIN_MAX] = 60;
+        func_800FD78C(play);
+        play->envCtx.unk_F2[0] = 60;
         EnWeatherTag_SetupAction(this, func_80966F74);
     }
 }
@@ -346,8 +352,8 @@ void func_80966EF0(EnWeatherTag* this, PlayState* play) {
 // WEATHERTAG_TYPE_UNK3 2
 void func_80966F74(EnWeatherTag* this, PlayState* play) {
     if (func_80966758(this, play, 1, 0, 2, 0, 100)) {
-        Environment_StopStormNatureAmbience(play);
-        play->envCtx.precipitation[PRECIP_RAIN_MAX] = 0;
+        func_800FD858(play);
+        play->envCtx.unk_F2[0] = 0;
         EnWeatherTag_SetupAction(this, func_80966EF0);
     }
 }
@@ -359,7 +365,7 @@ void func_80966FEC(EnWeatherTag* this, PlayState* play) {
     // weirdly, not the same as the other param lookup used in the rest of the file, which is float
     s32 distance = WEATHER_TAG_RANGE100INT(&this->actor);
     if (distance > 0) {
-        gSkyboxNumStars = distance;
+        D_801F4E7A = distance;
     }
 
     if ((play->sceneId == SCENE_KAIZOKU) && (play->actorCtx.flags & ACTORCTX_FLAG_1)) {
@@ -404,9 +410,9 @@ void EnWeatherTag_DoNothing(EnWeatherTag* this, PlayState* play) {
 // these two are isolated, they call themselves but nothing calls them?
 void EnWeatherTag_Unused_809671B8(EnWeatherTag* this, PlayState* play) {
     if (func_80966608(this, play, 0, 1, 0, 4, 100, 5)) {
-        Environment_PlayStormNatureAmbience(play);
-        play->envCtx.lightningState = LIGHTNING_ON;
-        play->envCtx.precipitation[PRECIP_RAIN_MAX] = 60;
+        func_800FD78C(play);
+        play->envCtx.unk_E3 = 1;
+        play->envCtx.unk_F2[0] = 60;
         EnWeatherTag_SetupAction(this, EnWeatherTag_Unused_80967250);
     }
 }
@@ -414,9 +420,9 @@ void EnWeatherTag_Unused_809671B8(EnWeatherTag* this, PlayState* play) {
 // these two are isolated, they call themselves but nothing calls them
 void EnWeatherTag_Unused_80967250(EnWeatherTag* this, PlayState* play) {
     if (func_80966758(this, play, 1, 0, 4, 0, 100)) {
-        Environment_StopStormNatureAmbience(play);
-        play->envCtx.lightningState = LIGHTNING_LAST;
-        play->envCtx.precipitation[PRECIP_RAIN_MAX] = 0;
+        func_800FD858(play);
+        play->envCtx.unk_E3 = 2;
+        play->envCtx.unk_F2[0] = 0;
         EnWeatherTag_SetupAction(this, EnWeatherTag_Unused_809671B8);
     }
 }
@@ -436,20 +442,20 @@ void func_809672DC(EnWeatherTag* this, PlayState* play) {
     range = WEATHER_TAG_RANGE100(&this->actor);
 
     if (distance < range) {
-        play->envCtx.sandstormState = SANDSTORM_6;
+        play->envCtx.sandstormState = 6;
         strength = 1.0f - (distance / range);
         if (0.8f < strength) {
             strength = 1.0f;
         }
         D_801F4E30 = (200.0f * strength);
     } else {
-        if (play->envCtx.sandstormState == SANDSTORM_6) {
+        if (play->envCtx.sandstormState == 6) {
             D_801F4E30 = 0;
-            play->envCtx.sandstormState = SANDSTORM_7;
+            play->envCtx.sandstormState = 7;
         }
     }
 
-    Math_SmoothStepToS(&play->envCtx.adjLightSettings.fogNear, -40.0f * strength, 1, 1, 1);
+    Math_SmoothStepToS(&play->envCtx.lightSettings.fogNear, (s16)(-40.0f * strength), 1, 1, 1);
 }
 
 // WEATHERTAG_TYPE_LOCALDAY2RAIN: rain proximity as approaching rainy scene
@@ -460,19 +466,19 @@ void func_809674C8(EnWeatherTag* this, PlayState* play) {
     if (Actor_WorldDistXZToActor(&player->actor, &this->actor) < WEATHER_TAG_RANGE100(&this->actor)) {
         if (CURRENT_DAY == 2) {
             if ((gSaveContext.save.time >= CLOCK_TIME(7, 0)) && (gSaveContext.save.time < CLOCK_TIME(17, 30)) &&
-                (play->envCtx.precipitation[PRECIP_SNOW_CUR] == 0)) {
+                (play->envCtx.unk_F2[2] == 0)) {
 
-                gWeatherMode = WEATHER_MODE_1;
-                Environment_PlayStormNatureAmbience(play);
-                play->envCtx.precipitation[PRECIP_SOS_MAX] = 32;
+                gWeatherMode = 1;
+                func_800FD78C(play);
+                play->envCtx.unk_F2[4] = 0x20;
                 EnWeatherTag_SetupAction(this, func_80967608);
             }
         }
     } else {
-        if ((play->envCtx.precipitation[PRECIP_SOS_MAX] != 0) && !(play->state.frames & 3)) {
-            play->envCtx.precipitation[PRECIP_SOS_MAX]--;
-            if ((play->envCtx.precipitation[PRECIP_SOS_MAX]) == 8) {
-                Environment_StopStormNatureAmbience(play);
+        if ((play->envCtx.unk_F2[4] != 0) && !(play->state.frames & 3)) {
+            play->envCtx.unk_F2[4]--;
+            if ((play->envCtx.unk_F2[4]) == 8) {
+                func_800FD858(play);
             }
         }
     }
@@ -482,7 +488,7 @@ void func_809674C8(EnWeatherTag* this, PlayState* play) {
 void func_80967608(EnWeatherTag* this, PlayState* play) {
     if ((WEATHER_TAG_RANGE100(&this->actor) + 10.0f) <
         Actor_WorldDistXZToActor(&GET_PLAYER(play)->actor, &this->actor)) {
-        gWeatherMode = WEATHER_MODE_CLEAR;
+        gWeatherMode = 0;
         EnWeatherTag_SetupAction(this, func_809674C8);
     }
 }

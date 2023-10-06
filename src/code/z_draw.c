@@ -823,13 +823,13 @@ void GetItem_DrawWallet(PlayState* play, s16 drawId) {
 
 void GetItem_DrawRemains(PlayState* play, s16 drawId) {
     s32 pad;
-    s8 objectSlot;
+    s8 objectIndex;
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_BSMASK);
+    objectIndex = Object_GetIndex(&play->objectCtx, OBJECT_BSMASK);
 
-    gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
+    gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.status[objectIndex].segment);
 
     Gfx_SetupDL25_Opa(play->state.gfxCtx);
     Matrix_Scale(0.02f, 0.02f, 0.02f, MTXMODE_APPLY);

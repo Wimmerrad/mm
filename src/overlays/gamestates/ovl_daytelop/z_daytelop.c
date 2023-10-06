@@ -84,7 +84,7 @@ void DayTelop_Update(DayTelopState* this, GameState* thisx) {
         SET_NEXT_GAMESTATE(&this->state, Play_Init, sizeof(PlayState));
 
         gSaveContext.save.time = CLOCK_TIME(6, 0);
-        gSceneSeqState = SCENESEQ_MORNING;
+        D_801BDBC8 = 0xFE;
     } else if (this->transitionCountdown == 90) {
         this->fadeInState = DAYTELOP_HOURSTEXT_FADEIN;
         this->alpha = 0;

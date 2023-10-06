@@ -378,7 +378,7 @@ void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
     BgNumaHana* this = THIS;
     WoodenFlowerPetalPosRot* innerPetalPosRot;
     WoodenFlowerPetalPosRot* outerPetalPosRot;
-    s32 objectSlot;
+    s32 objectIndex;
     s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -404,13 +404,13 @@ void BgNumaHana_Draw(Actor* thisx, PlayState* play2) {
         gSPDisplayList(POLY_OPA_DISP++, gWoodenFlowerOuterPetalDL);
     }
 
-    objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_SYOKUDAI);
-    if ((objectSlot > OBJECT_SLOT_NONE) && (Object_IsLoaded(&play->objectCtx, objectSlot))) {
+    objectIndex = Object_GetIndex(&play->objectCtx, OBJECT_SYOKUDAI);
+    if ((objectIndex >= 0) && (Object_IsLoaded(&play->objectCtx, objectIndex))) {
         Matrix_SetTranslateRotateYXZ(this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y - 64.5f,
                                      this->dyna.actor.world.pos.z, &this->dyna.actor.shape.rot);
         Matrix_Scale(1.5f, 1.5f, 1.5f, MTXMODE_APPLY);
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[objectSlot].segment);
+        gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.status[objectIndex].segment);
         gSPDisplayList(POLY_OPA_DISP++, gObjectSyokudaiTypeNoSwitchDL);
     }
 

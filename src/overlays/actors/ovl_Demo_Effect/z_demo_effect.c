@@ -37,14 +37,14 @@ ActorInit Demo_Effect_InitVars = {
 };
 
 void DemoEffect_Init(Actor* thisx, PlayState* play) {
-    static s16 sEffectTypeObjectIds[] = {
+    static s16 sEffectTypeObjects[] = {
         OBJECT_EFC_TW, OBJECT_EFC_TW, OBJECT_EFC_TW, OBJECT_EFC_TW, GAMEPLAY_KEEP,
         GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP, GAMEPLAY_KEEP,
     };
     s32 pad;
     DemoEffect* this = THIS;
     s32 type = DEMO_EFFECT_GET_TYPE(&this->actor);
-    s32 objectSlot;
+    s32 objectIndex;
     s32 pad2;
     Color_RGB8 lightColors[] = {
         { 200, 200, 0 },  // Yellow
@@ -54,16 +54,16 @@ void DemoEffect_Init(Actor* thisx, PlayState* play) {
         { 255, 255, 80 }, // Light Yellow
     };
 
-    if (sEffectTypeObjectIds[type] == GAMEPLAY_KEEP) {
-        objectSlot = 0;
+    if (sEffectTypeObjects[type] == GAMEPLAY_KEEP) {
+        objectIndex = 0;
     } else {
-        objectSlot = Object_GetSlot(&play->objectCtx, sEffectTypeObjectIds[type]);
+        objectIndex = Object_GetIndex(&play->objectCtx, sEffectTypeObjects[type]);
     }
 
-    if (objectSlot <= OBJECT_SLOT_NONE) {
+    if (objectIndex < 0) {
         // assert on debug
     } else {
-        this->initObjectSlot = objectSlot;
+        this->initObjectIndex = objectIndex;
     }
 
     Actor_SetScale(&this->actor, 0.2f);
@@ -123,8 +123,8 @@ void DemoEffect_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void DemoEffect_WaitForObject(DemoEffect* this, PlayState* play) {
-    if (Object_IsLoaded(&play->objectCtx, this->initObjectSlot)) {
-        this->actor.objectSlot = this->initObjectSlot;
+    if (Object_IsLoaded(&play->objectCtx, this->initObjectIndex)) {
+        this->actor.objBankIndex = this->initObjectIndex;
         this->actor.draw = this->initDrawFunc;
         this->actionFunc = this->initActionFunc;
     }
@@ -335,10 +335,10 @@ void DemoEffect_DrawLight(Actor* thisx, PlayState* play2) {
 
     CLOSE_DISPS(play->state.gfxCtx);
 
-    gCustomLensFlare1On = true;
-    gCustomLensFlare1Pos.x = thisx->world.pos.x;
-    gCustomLensFlare1Pos.y = thisx->world.pos.y;
-    gCustomLensFlare1Pos.z = thisx->world.pos.z;
+    D_801F4E32 = 1;
+    D_801F4E38.x = thisx->world.pos.x;
+    D_801F4E38.y = thisx->world.pos.y;
+    D_801F4E38.z = thisx->world.pos.z;
 
     D_801F4E44 = thisx->scale.x * 60.0f;
     D_801F4E48 = thisx->scale.x * 50.0f;

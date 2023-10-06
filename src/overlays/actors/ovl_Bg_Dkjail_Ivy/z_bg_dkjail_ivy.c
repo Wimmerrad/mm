@@ -120,16 +120,15 @@ void BgDkjailIvy_Init(Actor* thisx, PlayState* play) {
     DynaPolyActor_Init(&this->dyna, 0);
     Collider_InitCylinder(play, &this->collider);
 
-    if (Flags_GetSwitch(play, BG_DKJAIL_GET_SWITCH_FLAG(thisx))) {
+    if (Flags_GetSwitch(play, BG_DKJAIL_GET_SWITCH(thisx))) {
         Actor_Kill(&this->dyna.actor);
-        return;
+    } else {
+        DynaPolyActor_LoadMesh(play, &this->dyna, &gDkjailCol);
+        Collider_SetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit);
+        Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
+        this->alpha = 255;
+        BgDkjailIvy_SetupWaitForCut(this);
     }
-
-    DynaPolyActor_LoadMesh(play, &this->dyna, &gDkjailCol);
-    Collider_SetCylinder(play, &this->collider, &this->dyna.actor, &sCylinderInit);
-    Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
-    this->alpha = 255;
-    BgDkjailIvy_SetupWaitForCut(this);
 }
 
 void BgDkjailIvy_Destroy(Actor* thisx, PlayState* play) {
@@ -163,7 +162,7 @@ void BgDkjailIvy_BeginCutscene(BgDkjailIvy* this, PlayState* play) {
         CutsceneManager_StartWithPlayerCs(this->dyna.actor.csId, &this->dyna.actor);
         this->fadeOutTimer = 50;
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
-        Flags_SetSwitch(play, BG_DKJAIL_GET_SWITCH_FLAG(&this->dyna.actor));
+        Flags_SetSwitch(play, BG_DKJAIL_GET_SWITCH(&this->dyna.actor));
         BgDkjailIvy_IvyCutEffects(this, play);
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_GRASS_WALL_BROKEN);
         BgDkjailIvy_SetupFadeOut(this);

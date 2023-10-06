@@ -5,8 +5,6 @@
 
 struct ObjChan;
 
-#define OBJCHAN_GET_SWITCH_FLAG(thisx) ((thisx)->params & 0x7F)
-
 #define OBJCHAN_SUBTYPE(thisx) (((thisx)->params >> 12) & 0xF)
 #define OBJCHAN_SUBTYPE_CHANDELIER 0
 #define OBJCHAN_SUBTYPE_POT 1

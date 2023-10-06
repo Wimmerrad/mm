@@ -165,8 +165,8 @@ void EnGirlA_InitObjIndex(EnGirlA* this, PlayState* play) {
         return;
     }
 
-    this->objectSlot = Object_GetSlot(&play->objectCtx, sShopItemEntries[params].objectId);
-    if (this->objectSlot <= OBJECT_SLOT_NONE) {
+    this->objIndex = Object_GetIndex(&play->objectCtx, sShopItemEntries[params].objectId);
+    if (this->objIndex < 0) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -564,9 +564,9 @@ void EnGirlA_InitalUpdate(EnGirlA* this, PlayState* play) {
     s16 params = this->actor.params;
     ShopItemEntry* shopItem = &sShopItemEntries[params];
 
-    if (Object_IsLoaded(&play->objectCtx, this->objectSlot)) {
+    if (Object_IsLoaded(&play->objectCtx, this->objIndex)) {
         this->actor.flags &= ~ACTOR_FLAG_10;
-        this->actor.objectSlot = this->objectSlot;
+        this->actor.objBankIndex = this->objIndex;
         this->actor.textId = shopItem->descriptionTextId;
         this->choiceTextId = shopItem->choiceTextId;
 
